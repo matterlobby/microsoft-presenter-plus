@@ -28,6 +28,22 @@ export class PresenterDiscoveryError extends Error {
   }
 }
 
+export function listMicrosoftPresenters(options?: {
+  debug?: boolean;
+}): HidrawDeviceInfo[] {
+  const debug = options?.debug ?? false;
+  const devicePaths = enumerateHidrawDevicePaths();
+
+  if (debug) {
+    console.error(`[Discovery] Found ${devicePaths.length} hidraw device(s).`);
+  }
+
+  const evaluations = devicePaths.map((devicePath) => evaluateDevice(devicePath, debug));
+  return evaluations
+    .filter((evaluation) => evaluation.rejectionReasons.length === 0)
+    .map((evaluation) => evaluation.device);
+}
+
 export function discoverMicrosoftPresenter(options?: {
   debug?: boolean;
 }): HidrawDeviceInfo {

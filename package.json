@@ -1,10 +1,37 @@
 {
-  "name": "presenter-reader",
+  "name": "microsoft-presenter-plus",
   "version": "1.0.0",
+  "description": "Node.js library for receiving button events from the Microsoft Presenter+ on Linux via hidraw.",
+  "keywords": [
+    "microsoft",
+    "presenter",
+    "hidraw",
+    "linux",
+    "node"
+  ],
+  "license": "MIT",
   "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js"
+    "typecheck": "tsc --noEmit",
+    "example:list": "npm run build && node dist/examples/listPresenters.js",
+    "example:log": "npm run build && node dist/examples/logEvents.js",
+    "example:open-by-path": "npm run build && node dist/examples/openByPath.js"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
