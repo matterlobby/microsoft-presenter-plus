@@ -19,6 +19,100 @@ npm install microsoft-presenter-plus
 
 Depending on the system, the calling process may need additional permissions to access the HID device. Without those permissions, discovery or opening the device will fail.
 
+## Linux Setup
+
+### Bluetooth Pairing (CLI)
+
+- Put the Microsoft Presenter+ into pairing mode before scanning.
+- Then use `bluetoothctl` to pair it from the terminal:
+
+```bash
+bluetoothctl
+power on
+agent on
+default-agent
+scan on
+```
+
+- Look for a device named `Microsoft Presenter+` and note its MAC address.
+- Once found, pair, trust, and connect it:
+
+```bash
+pair <MAC>
+trust <MAC>
+connect <MAC>
+```
+
+- `trust <MAC>` is required if you want the device to reconnect automatically later.
+
+### Verify Input Devices
+
+- After pairing, check which input nodes were created:
+
+```bash
+ls /dev/input/event*
+ls /dev/hidraw*
+```
+
+- The presenter usually appears as multiple devices.
+- This library needs the `hidraw` device for full functionality.
+
+### Grant Access to hidraw Devices
+
+- On most systems, `/dev/hidraw*` is only readable by `root` or a privileged group.
+- This library needs read access to those devices.
+- Add your user to the `input` group:
+
+```bash
+sudo usermod -aG input <username>
+```
+
+- Log out and back in after changing group membership.
+
+### udev Rule for Persistent Permissions
+
+- Device permissions often reset after reboot or after the presenter reconnects.
+- Add a `udev` rule so matching Presenter+ `hidraw` devices keep the right group and mode.
+- Create `/etc/udev/rules.d/99-microsoft-presenter-plus.rules`:
+
+```bash
+sudo nano /etc/udev/rules.d/99-microsoft-presenter-plus.rules
+```
+
+- Paste this rule:
+
+```udev
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", KERNELS=="0005:045E:0851.*", GROUP="input", MODE="0660"
+```
+
+- Reload rules and apply them:
+
+```bash
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+```
+
+- Reconnect the presenter after applying the rule.
+
+### Verify Permissions
+
+- Inspect the device nodes:
+
+```bash
+ls -l /dev/hidraw*
+```
+
+- Expected result:
+- the group should be `input`
+- the permissions should include group `rw`
+
+### Troubleshooting
+
+- The device path, such as `/dev/hidraw2`, may change between reboots.
+- Make sure the correct user is in the `input` group.
+- Make sure the Bluetooth connection is active.
+- Use `udevadm info -a -n /dev/hidrawX` to inspect attributes when debugging rule matching.
+
 ## Quick Start
 
 ```ts
