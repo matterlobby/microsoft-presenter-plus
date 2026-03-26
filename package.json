@@ -1,7 +1,15 @@
 {
   "name": "microsoft-presenter-plus",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Node.js library for receiving button events from the Microsoft Presenter+ on Linux via hidraw.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matterlobby/microsoft-presenter-plus.git"
+  },
+  "homepage": "https://github.com/matterlobby/microsoft-presenter-plus#readme",
+  "bugs": {
+    "url": "https://github.com/matterlobby/microsoft-presenter-plus/issues"
+  },
   "keywords": [
     "microsoft",
     "presenter",
@@ -28,6 +36,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build",
     "typecheck": "tsc --noEmit",
     "example:list": "npm run build && node dist/examples/listPresenters.js",
     "example:log": "npm run build && node dist/examples/logEvents.js",
